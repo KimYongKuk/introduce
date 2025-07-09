@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub 팀 마스터 가이드</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 5px;
+            margin: 30px 0;
+        }
+
+        .progress-fill {
+            height: 20px;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .step {
+            background: white;
+            margin: 20px 0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            opacity: 1;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .step-header {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .step-header:hover {
+            background: linear-gradient(45deg, #20c997, #28a745);
+        }
+
+        .step-number {
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+
+        .step-content {
+            padding: 30px;
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: 'Windows CMD / PowerShell';
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: #4a5568;
+            color: #e2e8f0;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.8em;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #f39c12;
+        }
+
+        .warning::before {
+            content: '⚠️ ';
+            font-weight: bold;
+        }
+
+        .tip {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #28a745;
+        }
+
+        .tip::before {
+            content: '💡 ';
+            font-weight: bold;
+        }
+
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f1aeb5;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #dc3545;
+        }
+
+        .error::before {
+            content: '🚨 ';
+            font-weight: bold;
+        }
+
+        .checklist {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .checklist h3 {
+            margin-bottom: 15px;
+            color: #495057;
+        }
+
+        .checklist label {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+
+        .checklist input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .team-workflow {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .workflow-step {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .workflow-number {
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+
+        .next-button {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            float: right;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .next-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .troubleshooting {
+            background: #fff3cd;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .troubleshooting h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 GitHub 팀 마스터 가이드</h1>
+            <p>5명 팀을 위한 완벽한 GitHub 협업 가이드</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+
+        <!-- Step 1: 설치 및 설정 -->
+        <div class="step active" id="step1">
+            <div class="step-header" onclick="toggleStep(1)">
+                <div class="step-number">1</div>
+                <div>Git 설치 및 초기 설정 (Windows)</div>
+            </div>
+            <div class="step-content active">
+                <h3>🔧 Git 설치하기</h3>
+                <ol>
+                    <li><strong>Git 다운로드:</strong> <a href="https://git-scm.com" target="_blank">git-scm.com</a> 접속</li>
+                    <li><strong>Download for Windows</strong> 클릭</li>
+                    <li><strong>설치 시 모든 옵션 기본값으로 진행</strong></li>
+                    <li><strong>설치 완료 후 Git Bash 실행</strong></li>
+                </ol>
+
+                <div class="code-block">
+# 설치 확인
+git --version
+</div>
+
+                <div class="warning">
+                    <strong>VS Code 터미널에서 Git 명령어가 안 된다면?</strong><br>
+                    1. VS Code 완전 재시작<br>
+                    2. 터미널 우측 상단 드롭다운에서 "Git Bash" 선택<br>
+                    3. Ctrl + , → 검색: git.path → 값: C:\Program Files\Git\bin\git.exe
+                </div>
+
+                <h3>👤 Git 사용자 설정 (필수!)</h3>
+                <div class="code-block">
+# 사용자 정보 설정
+git config --global user.name "당신의 이름"
+git config --global user.email "이메일@example.com"
+
+# 기본 브랜치 이름 설정
+git config --global init.defaultBranch main
+
+# 설정 확인
+git config --list
+</div>
+
+                <div class="tip">
+                    GitHub 계정과 동일한 이름/이메일로 설정하면 커밋이 제대로 연결됩니다!
+                </div>
+
+                <div class="checklist">
+                    <h3>✅ 1단계 체크리스트</h3>
+                    <label><input type="checkbox"> Git 설치 완료</label>
+                    <label><input type="checkbox"> git --version 실행 성공</label>
+                    <label><input type="checkbox"> 사용자 이름/이메일 설정 완료</label>
+                    <label><input type="checkbox"> VS Code에서 Git 명령어 작동 확인</label>
+                </div>
+
+                <button class="next-button" onclick="nextStep(2)">다음 단계 →</button>
+            </div>
+        </div>
+
+        <!-- Step 2: GitHub 계정 및 저장소 생성 -->
+        <div class="step" id="step2">
+            <div class="step-header" onclick="toggleStep(2)">
+                <div class="step-number">2</div>
+                <div>GitHub 계정 생성 및 저장소 설정</div>
+            </div>
+            <div class="step-content">
+                <h3>🌐 GitHub 계정 생성</h3>
+                <ol>
+                    <li><a href="https://github.com" target="_blank">GitHub.com</a> 접속</li>
+                    <li><strong>Sign up</strong> 클릭</li>
+                    <li>계정 정보 입력 및 이메일 인증</li>
+                </ol>
+
+                <div class="team-workflow">
+                    <h3>👥 팀 저장소 생성 (PM이 진행)</h3>
+                    <div class="workflow-step">
+                        <div class="workflow-number">1</div>
+                        <div>PM이 GitHub에서 "New repository" 클릭</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">2</div>
+                        <div>저장소 이름 입력 (예: team-project)</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">3</div>
+                        <div>Public/Private 선택</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">4</div>
+                        <div>"Add a README file" 체크박스 <strong>해제</strong></div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">5</div>
+                        <div>"Create repository" 클릭</div>
+                    </div>
+                </div>
+
+                <h3>👥 팀원 초대 (Collaborator 추가)</h3>
+                <div class="code-block">
+Settings → Manage access → Invite a collaborator
+→ 팀원 GitHub 계정 입력 → 초대 전송
+</div>
+
+                <div class="warning">
+                    <strong>팀원들은 꼭 초대 이메일을 확인하고 수락해야 합니다!</strong>
+                </div>
+
+                <div class="checklist">
+                    <h3>✅ 2단계 체크리스트</h3>
+                    <label><input type="checkbox"> GitHub 계정 생성 완료</label>
+                    <label><input type="checkbox"> 팀 저장소 생성 완료 (PM)</label>
+                    <label><input type="checkbox"> 모든 팀원 Collaborator 초대 완료</label>
+                    <label><input type="checkbox"> 팀원들 초대 수락 완료</label>
+                </div>
+
+                <button class="next-button" onclick="nextStep(3)">다음 단계 →</button>
+            </div>
+        </div>
+
+        <!-- Step 3: 로컬 저장소 연결 -->
+        <div class="step" id="step3">
+            <div class="step-header" onclick="toggleStep(3)">
+                <div class="step-number">3</div>
+                <div>로컬 저장소 연결하기</div>
+            </div>
+            <div class="step-content">
+                <h3>💻 방법 1: 새 프로젝트 시작하기</h3>
+                <div class="code-block">
+# 프로젝트 폴더 생성
+mkdir team-project
+cd team-project
+
+# Git 저장소 초기화
+git init
+
+# README.md 파일 생성
+echo "# Team Project" > README.md
+
+# 스테이징 및 커밋
+git add .
+git commit -m "첫 커밋"
+
+# 원격 저장소 연결 (HTTPS 방식)
+git remote add origin https://github.com/username/team-project.git
+
+# 푸시
+git push -u origin main
+</div>
+
+                <h3>💻 방법 2: 기존 저장소 클론하기 (추천)</h3>
+                <div class="code-block">
+# 팀 저장소 클론
+git clone https://github.com/username/team-project.git
+cd team-project
+
+# 파일 수정 후 바로 작업 가능
+echo "팀원 추가 내용" >> README.md
+git add .
+git commit -m "팀원 작업 추가"
+git push origin main
+</div>
+
+                <div class="troubleshooting">
+                    <h4>🔧 자주 발생하는 오류들</h4>
+                    
+                    <div class="error">
+                        <strong>error: src refspec main does not match any</strong><br>
+                        → 해결: 첫 커밋을 하지 않았거나 브랜치 이름이 다름<br>
+                        → git branch로 현재 브랜치 확인 후 git push -u origin 브랜치명
+                    </div>
+
+                    <div class="error">
+                        <strong>Updates were rejected because the remote contains work</strong><br>
+                        → 해결: git pull origin main --allow-unrelated-histories<br>
+                        → 또는 git push origin main --force (주의!)
+                    </div>
+
+                    <div class="error">
+                        <strong>Permission denied (publickey)</strong><br>
+                        → 해결: HTTPS 방식 사용 (git remote set-url origin https://github.com/...)
+                    </div>
+                </div>
+
+                <div class="tip">
+                    <strong>팀 프로젝트에서는 Clone 방식을 추천합니다!</strong><br>
+                    더 간단하고 충돌이 적어요.
+                </div>
+
+                <div class="checklist">
+                    <h3>✅ 3단계 체크리스트</h3>
+                    <label><input type="checkbox"> 로컬 저장소 생성 또는 클론 완료</label>
+                    <label><input type="checkbox"> 원격 저장소 연결 완료</label>
+                    <label><input type="checkbox"> 첫 푸시 성공</label>
+                    <label><input type="checkbox"> GitHub에서 파일 확인 완료</label>
+                </div>
+
+                <button class="next-button" onclick="nextStep(4)">다음 단계 →</button>
+            </div>
+        </div>
+
+        <!-- Step 4: 기본 Git 워크플로우 -->
+        <div class="step" id="step4">
+            <div class="step-header" onclick="toggleStep(4)">
+                <div class="step-number">4</div>
+                <div>기본 Git 워크플로우 마스터</div>
+            </div>
+            <div class="step-content">
+                <h3>🔄 기본 명령어 5개 (반드시 암기!)</h3>
+                <div class="code-block">
+git add .              # 모든 변경사항 스테이징
+git commit -m "메시지"  # 커밋 (로컬에 저장)
+git push origin main   # 원격 저장소에 업로드
+git pull origin main   # 원격 저장소에서 최신 코드 받기
+git status            # 현재 상태 확인
+</div>
+
+                <h3>📋 일반적인 작업 흐름</h3>
+                <div class="team-workflow">
+                    <div class="workflow-step">
+                        <div class="workflow-number">1</div>
+                        <div>작업 시작 전: git pull origin main</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">2</div>
+                        <div>파일 수정/추가</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">3</div>
+                        <div>git add . (스테이징)</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">4</div>
+                        <div>git commit -m "의미있는 메시지"</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">5</div>
+                        <div>git push origin main</div>
+                    </div>
+                </div>
+
+                <h3>💬 좋은 커밋 메시지 작성법</h3>
+                <div class="code-block">
+# 좋은 예시
+git commit -m "로그인 기능 추가"
+git commit -m "헤더 스타일 수정"
+git commit -m "사용자 인증 버그 수정"
+
+# 나쁜 예시
+git commit -m "수정"
+git commit -m "버그픽스"
+git commit -m "작업완료"
+</div>
+
+                <div class="tip">
+                    <strong>팀 협업 시 중요한 점:</strong><br>
+                    • 매일 작업 시작할 때 git pull 먼저!<br>
+                    • 자주 커밋하고 푸시하기<br>
+                    • 의미있는 커밋 메시지 작성
+                </div>
+
+                <div class="checklist">
+                    <h3>✅ 4단계 체크리스트</h3>
+                    <label><input type="checkbox"> 기본 명령어 5개 숙지</label>
+                    <label><input type="checkbox"> 파일 수정 → 커밋 → 푸시 성공</label>
+                    <label><input type="checkbox"> git status로 상태 확인 가능</label>
+                    <label><input type="checkbox"> 좋은 커밋 메시지 작성법 이해</label>
+                </div>
+
+                <button class="next-button" onclick="nextStep(5)">다음 단계 →</button>
+            </div>
+        </div>
+
+        <!-- Step 5: 브랜치 활용 -->
+        <div class="step" id="step5">
+            <div class="step-header" onclick="toggleStep(5)">
+                <div class="step-number">5</div>
+                <div>브랜치로 안전하게 협업하기</div>
+            </div>
+            <div class="step-content">
+                <h3>🌿 브랜치가 필요한 이유</h3>
+                <div class="team-workflow">
+                    <h4>❌ 브랜치 없이 작업하면?</h4>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin: 10px 0;">
+                        모든 팀원이 main에서 직접 작업 → 충돌 지옥 → 사이트 망가짐
+                    </div>
+                    
+                    <h4>✅ 브랜치로 작업하면?</h4>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin: 10px 0;">
+                        각자 별도 브랜치에서 안전하게 작업 → 완성 후 병합 → 안정적인 협업
+                    </div>
+                </div>
+
+                <h3>🔧 브랜치 기본 명령어</h3>
+                <div class="code-block">
+# 새 브랜치 생성 및 이동
+git checkout -b feature/login
+
+# 브랜치 목록 확인
+git branch
+
+# 다른 브랜치로 이동
+git checkout main
+
+# 브랜치 병합
+git merge feature/login
+
+# 브랜치 삭제
+git branch -d feature/login
+</div>
+
+                <h3>👥 팀 브랜치 전략</h3>
+                <div class="code-block">
+main                    # 🏠 항상 안정된 배포 가능한 코드
+├── feature/login      # 👤 철수: 로그인 기능
+├── feature/payment    # 💰 영희: 결제 기능  
+├── feature/ui-design  # 🎨 민수: UI 디자인
+├── bugfix/header      # 🐛 지영: 헤더 버그 수정
+└── feature/database   # 🗃️ 동현: 데이터베이스 연동
+</div>
+
+                <h3>🔄 브랜치 작업 워크플로우</h3>
+                <div class="code-block">
+# 1. 최신 main 코드 받기
+git checkout main
+git pull origin main
+
+# 2. 새 브랜치 생성해서 작업 시작
+git checkout -b feature/my-feature
+
+# 3. 작업 후 커밋
+git add .
+git commit -m "새 기능 추가"
+
+# 4. 원격 저장소에 브랜치 푸시
+git push origin feature/my-feature
+
+# 5. GitHub에서 Pull Request 생성
+# 6. 코드 리뷰 받고 승인되면 병합
+</div>
+
+                <div class="warning">
+                    <strong>브랜치 작업 시 주의사항:</strong><br>
+                    • 브랜치 이름은 명확하게 (feature/login, bugfix/header)<br>
+                    • 작업 완료 후 반드시 main으로 돌아가기<br>
+                    • 병합 완료된 브랜치는 삭제하기
+                </div>
+
+                <div class="checklist">
+                    <h3>✅ 5단계 체크리스트</h3>
+                    <label><input type="checkbox"> 브랜치 생성 및 이동 가능</label>
+                    <label><input type="checkbox"> 브랜치에서 작업 후 푸시 성공</label>
+                    <label><input type="checkbox"> 브랜치 병합 경험</label>
+                    <label><input type="checkbox"> 팀 브랜치 전략 이해</label>
+                </div>
+
+                <button class="next-button" onclick="nextStep(6)">다음 단계 →</button>
+            </div>
+        </div>
+
+        <!-- Step 6: Pull Request -->
+        <div class="step" id="step6">
+            <div class="step-header" onclick="toggleStep(6)">
+                <div class="step-number">6</div>
+                <div>Pull Request와 코드 리뷰</div>
+            </div>
+            <div class="step-content">
+                <h3>🔄 Pull Request란?</h3>
+                <div class="team-workflow">
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;">
+                        <strong>"내가 만든 기능을 main 브랜치에 합쳐달라"고 요청하는 것</strong><br><br>
+                        ✅ 코드 리뷰 가능<br>
+                        ✅ 변경사항 추적 가능<br>
+                        ✅ 토론 및 피드백 가능<br>
+                        ✅ 안전한 병합 과정
+                    </div>
+                </div>
+
+                <h3>📋 Pull Request 생성 과정</h3>
+                <div class="code-block">
+# 1. 브랜치에서 작업 완료 후 푸시
+git push origin feature/my-feature
+
+# 2. GitHub 웹사이트에서 확인
+# → 노란색 "Compare & pull request" 버튼 클릭
+# → 또는 Pull requests 탭 → New pull request
+</div>
+
+                <div class="team-workflow">
+                    <h4>📝 Pull Request 작성 팁</h4>
+                    <div class="workflow-step">
+                        <div class="workflow-number">1</div>
+                        <div><strong>제목:</strong> 명확하고 간결하게</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">2</div>
+                        <div><strong>설명:</strong> 무엇을 왜 변경했는지</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">3</div>
+                        <div><strong>스크린샷:</strong> UI 변경 시 첨부</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">4</div>
+                        <div><strong>체크리스트:</strong> 테스트 완료 여부</div>
+                    </div>
+                </div>
+
+                <h3>👀 코드 리뷰 과정</h3>
+                <div class="code-block">
+# PR 생성 후 팀원들이 할 수 있는 것들:
+
+1. Files changed 탭에서 코드 변경사항 확인
+2. 특정 줄에 댓글 달기
+3. 전체적인 피드백 제공
+4. 승인 (Approve) 또는 변경 요청 (Request changes)
+</div>
+
+                <div class="troubleshooting">
+                    <h4>🔧 PR 관련 자주 묻는 질문</h4>
+                    
+                    <div class="tip">
+                        <strong>Q: PR 생성 후 추가 작업이 필요하다면?</strong><br>
+                        A: 같은 브랜치에서 계속 작업하고 푸시하면 PR이 자동 업데이트됩니다!
+                    </div>
+
+                    <div class="tip">
+                        <strong>Q: 노란색 PR 알림이 안 뜬다면?</strong><br>
+                        A: Pull requests 탭 → New pull request로 수동 생성하세요.
+                    </div>
+
+                    <div class="tip">
+                        <strong>Q: 이미 Closed된 PR만 보인다면?</strong><br>
+                        A: 새로운 변경사항이니 새 PR을 만들어야 합니다.
+                    </div>
+                </div>
+
+                <h3>🎯 병합 후 정리</h3>
+                <div class="code-block">
+# PR 병합 완료 후 로컬 정리
+git checkout main
+git pull origin main
+git branch -d feature/my-feature
+
+# GitHub에서도 브랜치 삭제 (선택사항)
+# PR 페이지에서 "Delete branch" 버튼 클릭
+</div>
+
+                <div class="checklist">
+                    <h3>✅ 6단계 체크리스트</h3>
+                    <label><input type="checkbox"> Pull Request 생성 성공</label>
+                    <label><input type="checkbox"> 코드 리뷰 과정 이해</label>
+                    <label><input type="checkbox"> PR 병합 완료</label>
+                    <label><input type="checkbox"> 브랜치 정리 완료</label>
+                </div>
+
+                <button class="next-button" onclick="nextStep(7)">다음 단계 →</button>
+            </div>
+        </div>
+
+        <!-- Step 7: 충돌 해결 -->
+        <div class="step" id="step7">
+            <div class="step-header" onclick="toggleStep(7)">
+                <div class="step-number">7</div>
+                <div>충돌 해결하기</div>
+            </div>
+            <div class="step-content">
+                <h3>💥 충돌이 발생하는 상황</h3>
+                <div class="team-workflow">
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;">
+                        <strong>같은 파일의 같은 부분을 여러 사람이 수정했을 때</strong><br><br>
+                        예: 철수가 README.md 1번째 줄 수정 → 영희도 README.md 1번째 줄 수정 → 충돌!
+                    </div>
+                </div>
+
+                <h3>🔧 충돌 해결 과정</h3>
+                <div class="code-block">
+# 1. 충돌 발생 시 나타나는 메시지
+git pull origin main
+# Auto-merging README.md
+# CONFLICT (content): Merge conflict in README.md
+# Automatic merge failed; fix conflicts and then commit the result.
+
+# 2. 충돌 상태 확인
+git status
+# You have unmerged paths.
+# (fix conflicts and run "git commit")
+</div>
+
+                <h3>📝 충돌 파일 수정하기</h3>
+                <div class="code-block">
+# 충돌 파일을 열면 이런 표시가 나타남:
+
+<<<<<<< HEAD
+현재 브랜치의 내용 (내가 작업한 내용)
+=======
+들어오는 변경사항 (다른 사람이 작업한 내용)
+>>>>>>> branch-name
+
+# 해결 방법:
+# 1. 필요한 내용만 남기고 나머지 삭제
+# 2. <<<<<<<, =======, >>>>>>> 표시 모두 삭제
+# 3. 최종 결과만 남기기
+</div>
+
+                <div class="team-workflow">
+                    <h4>📋 충돌 해결 단계</h4>
+                    <div class="workflow-step">
+                        <div class="workflow-number">1</div>
+                        <div>충돌 파일 열기 (VS Code 추천)</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">2</div>
+                        <div>충돌 표시 찾기 (<<<<<<< ======= >>>>>>>)</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">3</div>
+                        <div>필요한 내용 선택/편집</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">4</div>
+                        <div>충돌 표시 삭제</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">5</div>
+                        <div>파일 저장</div>
+                    </div>
+                </div>
+
+                <h3>✅ 충돌 해결 완료</h3>
+                <div class="code-block">
+# 1. 충돌 해결 후 스테이징
+git add .
+
+# 2. 병합 커밋 생성
+git commit -m "충돌 해결: README.md 병합"
+
+# 3. 푸시
+git push origin main
+</div>
+
+                <div class="tip">
+                    <strong>충돌 예방 팁:</strong><br>
+                    • 작업 시작 전 항상 git pull<br>
+                    • 자주 커밋하고 푸시하기<br>
+                    • 같은 파일을 동시에 수정하지 않기<br>
+                    • 역할 분담 명확히 하기
+                </div>
+
+                <div class="warning">
+                    <strong>VS Code에서 충돌 해결:</strong><br>
+                    충돌 파일을 열면 "Accept Current Change", "Accept Incoming Change", "Accept Both Changes" 버튼이 나타납니다. 클릭하면 쉽게 해결 가능!
+                </div>
+
+                <div class="checklist">
+                    <h3>✅ 7단계 체크리스트</h3>
+                    <label><input type="checkbox"> 충돌 발생 상황 이해</label>
+                    <label><input type="checkbox"> 충돌 파일 식별 가능</label>
+                    <label><input type="checkbox"> 충돌 해결 및 커밋 성공</label>
+                    <label><input type="checkbox"> 충돌 예방 방법 숙지</label>
+                </div>
+
+                <button class="next-button" onclick="nextStep(8)">다음 단계 →</button>
+            </div>
+        </div>
+
+        <!-- Step 8: GitHub Pages -->
+        <div class="step" id="step8">
+            <div class="step-header" onclick="toggleStep(8)">
+                <div class="step-number">8</div>
+                <div>GitHub Pages로 웹사이트 배포</div>
+            </div>
+            <div class="step-content">
+                <h3>🌐 GitHub Pages란?</h3>
+                <div class="team-workflow">
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;">
+                        <strong>GitHub 저장소를 무료 웹사이트로 배포하는 서비스</strong><br><br>
+                        ✅ 정적 웹사이트 호스팅<br>
+                        ✅ 완전 무료<br>
+                        ✅ 자동 배포<br>
+                        ✅ 커스텀 도메인 지원
+                    </div>
+                </div>
+
+                <h3>🚀 GitHub Pages 설정하기</h3>
+                <div class="code-block">
+# 1. 저장소에 HTML 파일 생성
+echo "<!DOCTYPE html>
+<html>
+<head>
+    <title>우리 팀 프로젝트</title>
+</head>
+<body>
+    <h1>안녕하세요! 우리 팀 프로젝트입니다.</h1>
+    <p>GitHub Pages로 배포된 웹사이트입니다.</p>
+</body>
+</html>" > index.html
+
+# 2. 커밋 및 푸시
+git add index.html
+git commit -m "웹사이트 추가"
+git push origin main
+</div>
+
+                <div class="team-workflow">
+                    <h4>⚙️ GitHub Pages 활성화</h4>
+                    <div class="workflow-step">
+                        <div class="workflow-number">1</div>
+                        <div>GitHub 저장소 → Settings 클릭</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">2</div>
+                        <div>왼쪽 메뉴 → Pages 클릭</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">3</div>
+                        <div>Source: GitHub Actions 선택</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">4</div>
+                        <div>Static HTML 선택 → Configure 클릭</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">5</div>
+                        <div>Commit changes 클릭</div>
+                    </div>
+                </div>
+
+                <h3>📱 웹사이트 접속하기</h3>
+                <div class="code-block">
+# 웹사이트 주소 형태:
+https://username.github.io/repository-name/
+
+# 예시:
+https://kimyongkuk.github.io/team-project/
+</div>
+
+                <div class="tip">
+                    <strong>GitHub Pages 활용 아이디어:</strong><br>
+                    • 팀 프로젝트 포트폴리오 사이트<br>
+                    • 프로젝트 문서화 사이트<br>
+                    • 개인 블로그<br>
+                    • 프로젝트 데모 사이트
+                </div>
+
+                <div class="warning">
+                    <strong>주의사항:</strong><br>
+                    • 배포까지 몇 분 소요될 수 있음<br>
+                    • 정적 사이트만 지원 (서버 사이드 언어 불가)<br>
+                    • Public 저장소만 무료 (Private는 유료 계정 필요)
+                </div>
+
+                <div class="checklist">
+                    <h3>✅ 8단계 체크리스트</h3>
+                    <label><input type="checkbox"> index.html 파일 생성</label>
+                    <label><input type="checkbox"> GitHub Pages 설정 완료</label>
+                    <label><input type="checkbox"> 웹사이트 접속 성공</label>
+                    <label><input type="checkbox"> 팀원들과 사이트 공유</label>
+                </div>
+
+                <button class="next-button" onclick="nextStep(9)">마지막 단계 →</button>
+            </div>
+        </div>
+
+        <!-- Step 9: 팀 협업 가이드 -->
+        <div class="step" id="step9">
+            <div class="step-header" onclick="toggleStep(9)">
+                <div class="step-number">9</div>
+                <div>팀 협업 모범 사례</div>
+            </div>
+            <div class="step-content">
+                <h3>👥 효과적인 팀 협업 규칙</h3>
+                
+                <div class="team-workflow">
+                    <h4>📅 일일 워크플로우</h4>
+                    <div class="workflow-step">
+                        <div class="workflow-number">1</div>
+                        <div><strong>아침:</strong> git pull origin main (최신 코드 받기)</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">2</div>
+                        <div><strong>작업 시작:</strong> 새 브랜치 생성</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">3</div>
+                        <div><strong>작업 중:</strong> 자주 커밋하기</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">4</div>
+                        <div><strong>작업 완료:</strong> PR 생성 및 리뷰 요청</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">5</div>
+                        <div><strong>저녁:</strong> 브랜치 정리 및 다음 작업 계획</div>
+                    </div>
+                </div>
+
+                <h3>🎯 브랜치 명명 규칙</h3>
+                <div class="code-block">
+# 기능 개발
+feature/login-system
+feature/user-dashboard
+feature/payment-integration
+
+# 버그 수정
+bugfix/header-alignment
+bugfix/login-validation
+bugfix/responsive-mobile
+
+# 핫픽스 (긴급 수정)
+hotfix/security-patch
+hotfix/critical-bug
+
+# 실험적 기능
+experiment/new-ui-design
+experiment/ai-integration
+</div>
+
+                <h3>💬 커밋 메시지 컨벤션</h3>
+                <div class="code-block">
+# 타입: 간결한 설명
+
+feat: 새로운 기능 추가
+fix: 버그 수정
+docs: 문서 수정
+style: 코드 스타일 변경 (포맷팅, 세미콜론 등)
+refactor: 코드 리팩토링
+test: 테스트 추가
+chore: 기타 변경사항
+
+# 예시:
+feat: 사용자 로그인 기능 추가
+fix: 헤더 메뉴 클릭 안되는 버그 수정
+docs: README.md 설치 가이드 업데이트
+</div>
+
+                <div class="team-workflow">
+                    <h4>🔄 코드 리뷰 가이드라인</h4>
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;">
+                        <strong>리뷰어가 확인할 점:</strong><br>
+                        • 코드 품질 및 가독성<br>
+                        • 버그 가능성<br>
+                        • 성능 이슈<br>
+                        • 보안 문제<br>
+                        • 팀 코딩 스타일 준수<br><br>
+                        
+                        <strong>리뷰 받는 사람:</strong><br>
+                        • 피드백 수용 및 수정<br>
+                        • 질문에 대한 답변<br>
+                        • 추가 설명 제공
+                    </div>
+                </div>
+
+                <h3>🚨 응급 상황 대처법</h3>
+                <div class="troubleshooting">
+                    <h4>💥 실수로 main에 직접 푸시했을 때</h4>
+                    <div class="code-block">
+# 1. 마지막 커밋 취소 (파일 변경사항 유지)
+git reset --soft HEAD~1
+
+# 2. 새 브랜치 생성
+git checkout -b feature/fix-mistake
+
+# 3. 다시 커밋
+git add .
+git commit -m "실수 수정: 브랜치로 이동"
+
+# 4. PR 생성
+git push origin feature/fix-mistake
+</div>
+
+                    <h4>🔄 잘못된 브랜치에서 작업했을 때</h4>
+                    <div class="code-block">
+# 1. 현재 작업 임시 저장
+git stash
+
+# 2. 올바른 브랜치로 이동
+git checkout correct-branch
+
+# 3. 작업 복원
+git stash pop
+</div>
+                </div>
+
+                <div class="tip">
+                    <strong>팀 협업 성공 팁:</strong><br>
+                    • 매일 스탠드업 미팅 (진행상황 공유)<br>
+                    • 작업 분배 명확히 하기<br>
+                    • 문제 발생 시 즉시 공유<br>
+                    • 서로의 코드 스타일 존중<br>
+                    • 꾸준한 커뮤니케이션
+                </div>
+
+                <div class="checklist">
+                    <h3>🎉 완주 체크리스트</h3>
+                    <label><input type="checkbox"> Git 설치 및 설정 완료</label>
+                    <label><input type="checkbox"> 팀 저장소 생성 및 협업자 추가</label>
+                    <label><input type="checkbox"> 기본 Git 워크플로우 숙지</label>
+                    <label><input type="checkbox"> 브랜치 활용 가능</label>
+                    <label><input type="checkbox"> Pull Request 생성 및 병합</label>
+                    <label><input type="checkbox"> 충돌 해결 경험</label>
+                    <label><input type="checkbox"> GitHub Pages 배포 성공</label>
+                    <label><input type="checkbox"> 팀 협업 규칙 이해</label>
+                </div>
+
+                <div style="text-align: center; margin-top: 40px;">
+                    <h2 style="color: #28a745;">🎊 축하합니다! GitHub 마스터 완주! 🎊</h2>
+                    <p style="font-size: 1.2em; margin-top: 20px;">이제 여러분은 전문적인 GitHub 협업이 가능합니다!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 추가 리소스 -->
+        <div class="step" id="step10">
+            <div class="step-header" onclick="toggleStep(10)">
+                <div class="step-number">📚</div>
+                <div>추가 학습 자료</div>
+            </div>
+            <div class="step-content">
+                <h3>🔗 유용한 링크</h3>
+                <div class="team-workflow">
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;">
+                        <strong>공식 문서:</strong><br>
+                        • <a href="https://docs.github.com" target="_blank">GitHub 공식 문서</a><br>
+                        • <a href="https://git-scm.com/doc" target="_blank">Git 공식 문서</a><br><br>
+                        
+                        <strong>추가 학습:</strong><br>
+                        • GitHub Actions (CI/CD)<br>
+                        • Git Flow 워크플로우<br>
+                        • 오픈소스 기여하기<br>
+                        • 고급 Git 명령어
+                    </div>
+                </div>
+
+                <h3>🎯 다음 단계 추천</h3>
+                <div class="checklist">
+                    <h3>🚀 팀 프로젝트 시작하기</h3>
+                    <label><input type="checkbox"> 실제 프로젝트에 이 가이드 적용</label>
+                    <label><input type="checkbox"> 팀 코딩 컨벤션 정하기</label>
+                    <label><input type="checkbox"> 정기 코드 리뷰 시간 정하기</label>
+                    <label><input type="checkbox"> 프로젝트 GitHub Pages 배포</label>
+                    <label><input type="checkbox"> 오픈소스 프로젝트 참여 계획</label>
+                </div>
+
+                <div style="text-align: center; margin-top: 40px;">
+                    <h3 style="color: #28a745;">💪 계속 성장하는 개발자가 되세요!</h3>
+                    <p>GitHub은 도구일 뿐, 중요한 것은 함께 만들어가는 코드입니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 9;
+
+        function toggleStep(stepNumber) {
+            const step = document.getElementById(`step${stepNumber}`);
+            const content = step.querySelector('.step-content');
+            
+            // 모든 단계를 비활성화
+            for (let i = 1; i <= totalSteps + 1; i++) {
+                const otherStep = document.getElementById(`step${i}`);
+                const otherContent = otherStep?.querySelector('.step-content');
+                if (otherStep && otherContent) {
+                    otherStep.classList.remove('active');
+                    otherContent.classList.remove('active');
+                }
+            }
+            
+            // 선택된 단계만 활성화
+            step.classList.add('active');
+            content.classList.add('active');
+            
+            currentStep = stepNumber;
+            updateProgress();
+        }
+
+        function nextStep(stepNumber) {
+            if (stepNumber <= totalSteps + 1) {
+                toggleStep(stepNumber);
+            }
+        }
+
+        function updateProgress() {
+            const progress = (currentStep / totalSteps) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // 체크박스 상태 저장
+        document.addEventListener('change', function(e) {
+            if (e.target.type === 'checkbox') {
+                const stepId = e.target.closest('.step').id;
+                const checkboxes = document.querySelectorAll(`#${stepId} input[type="checkbox"]`);
+                const checked = document.querySelectorAll(`#${stepId} input[type="checkbox"]:checked`);
+                
+                // 모든 체크박스가 체크되면 다음 단계 버튼 강조
+                if (checked.length === checkboxes.length) {
+                    const nextButton = document.querySelector(`#${stepId} .next-button`);
+                    if (nextButton) {
+                        nextButton.style.animation = 'pulse 1s infinite';
+                    }
+                }
+            }
+        });
+
+        // 초기 진행률 설정
+        updateProgress();
+
+        // 펄스 애니메이션 CSS 추가
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
